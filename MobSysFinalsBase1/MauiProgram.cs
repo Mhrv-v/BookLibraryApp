@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MobSysFinalsBase1.Services;
 using MobSysFinalsBase1.Shared;
 
 namespace MobSysFinalsBase1
@@ -17,8 +18,10 @@ namespace MobSysFinalsBase1
 
             builder.Services.AddMauiBlazorWebView();
 
+            builder.Services.AddSingleton<BookService>();
+
 #if DEBUG
-    		builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
             builder.Services.AddSingleton<AppShellContext>();
