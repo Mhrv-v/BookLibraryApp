@@ -4,13 +4,13 @@
 <div class="mainlayout-bg">
     <div class="page">
         <main>
+            <article class="content mainlayout-content" style="margin-top: 70px;">
+                @Body
+            </article>
             @if (!HideNavMenu)
             {
                 <NavMenu />
             }
-            <article class="content mainlayout-content" style="margin-top: 70px;">
-                @Body
-            </article>
         </main>
     </div>
 </div>

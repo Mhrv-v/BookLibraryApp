@@ -245,3 +245,54 @@
     background: #e0e7ef88;
     border-radius: 10px;
 }
+
+
+.tachiyomi-bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1030;
+    height: 64px;
+    background: #22272e;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
+    border-top: 1px solid #2d333b;
+}
+
+.tachiyomi-nav-btn {
+    flex: 1 1 0;
+    background: none;
+    border: none;
+    outline: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 0 0 0;
+    color: #b9bbbe;
+    font-size: 14px;
+    transition: color 0.15s;
+    height: 100%;
+    cursor: pointer;
+}
+
+    .tachiyomi-nav-btn .fa,
+    .tachiyomi-nav-btn .fas {
+        font-size: 22px;
+        margin-bottom: 2px;
+    }
+
+    .tachiyomi-nav-btn.active,
+    .tachiyomi-nav-btn:hover {
+        color: #ffb300;
+        background: rgba(255,179,0,0.08);
+    }
+
+    .tachiyomi-nav-btn span {
+        font-size: 12px;
+        margin-top: 0px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+    }

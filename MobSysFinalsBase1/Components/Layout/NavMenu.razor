@@ -1,96 +1,62 @@
 ﻿@inject NavigationManager Nav
 @inject AppShellContext AppShell
 
-<button class="navmenu-burger"
-        @onclick="() => IsOpen = true"
-        aria-label="Open menu"
-        style="@(IsOpen ? "display:none;" : "")">
-    <i class="fas fa-bars"></i>
-</button>
-
-@if (IsOpen)
+@if (!HideNavMenu)
 {
-    <div class="navmenu-overlay" @onclick="HandleOverlayClick">
-        <nav class="navmenu-panel open" @onclick:stopPropagation>
-            <div class="navmenu-header">
-                <div class="navmenu-header-user">
-                    <div class="navmenu-avatar-placeholder">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    @if (AppShell.IsUserLoggedIn && AppShell.CurrentUser != null)
-                    {
-                        <span class="navmenu-username">Hi, @AppShell.CurrentUser.Username</span>
-                    }
-                    else
-                    {
-                        <span class="navmenu-brand">Bruhmazon</span>
-                    }
-                </div>
-                <button class="navmenu-close" @onclick="() => IsOpen = false" aria-label="Close menu">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <ul class="navmenu-list">
-               
-                @if (AppShell.IsUserLoggedIn)
-                {
-                    <li>
-                        <a class="navmenu-link @(IsActive(""))" href="" @onclick='() => NavigateAndClose("")'>
-                            <span class="navmenu-icon"><i class="fa fa-home"></i></span>
-                            Browse
-                        </a>
-                    </li>
-                    <li>
-                        <a class="navmenu-link @(IsActive("books"))" href="" @onclick='() => NavigateAndClose("books")'>
-                            <span class="navmenu-icon"><i class="fa fa-home"></i></span>
-                            Books
-                        </a>
-                    </li>
-                    <li>
-                        <a class="navmenu-link @(IsActive("favourites"))" href="favourites" @onclick='() => NavigateAndClose("favourites")'>
-                            <span class="navmenu-icon"><i class="fa fa-heart"></i></span>
-                            Favourites
-                        </a>
-                    </li>
-                    <li>
-                        <button class="navmenu-link navmenu-logout-btn" @onclick="Logout" type="button">
-                            <span class="navmenu-icon"><i class="fas fa-sign-out-alt"></i></span>
-                            Logout
-                        </button>
-                    </li>
-                }
-                else
-                {
-                    <li>
-                        <a class="navmenu-link @(IsActive("register"))" href="register" @onclick='() => NavigateAndClose("register")'>
-                            <span class="navmenu-icon"><i class="fa fa-list"></i></span>
-                            Register
-                        </a>
-                    </li>
-                    <li>
-                        <a class="navmenu-link @(IsActive("login"))" href="login" @onclick='() => NavigateAndClose("login")'>
-                            <span class="navmenu-icon"><i class="fa fa-sign-in-alt"></i></span>
-                            Login
-                        </a>
-                    </li>
-                }
-            </ul>
-        </nav>
-    </div>
+    <nav class="tachiyomi-bottom-nav shadow-lg">
+        @if (AppShell.IsUserLoggedIn)
+        {
+            <button class="tachiyomi-nav-btn @(ActiveTab == "browse" ? "active" : "")" title="Browse" @onclick="@(() => NavigateAndClose(""))">
+                <i class="fas fa-compass"></i>
+                <span>Browse</span>
+            </button>
+            <button class="tachiyomi-nav-btn @(ActiveTab == "books" ? "active" : "")" title="Books" @onclick="@(() => NavigateAndClose("books"))">
+                <i class="fas fa-book"></i>
+                <span>Books</span>
+            </button>
+            <button class="tachiyomi-nav-btn @(ActiveTab == "favourites" ? "active" : "")" title="Favourites" @onclick="@(() => NavigateAndClose("favourites"))">
+                <i class="fas fa-star"></i>
+                <span>Favourites</span>
+            </button>
+            <button class="tachiyomi-nav-btn" title="Logout" @onclick="Logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        }
+        else
+        {
+            <button class="tachiyomi-nav-btn @(ActiveTab == "register" ? "active" : "")" title="Register" @onclick="@(() => NavigateAndClose("register"))">
+                <i class="fas fa-user-plus"></i>
+                <span>Register</span>
+            </button>
+            <button class="tachiyomi-nav-btn @(ActiveTab == "login" ? "active" : "")" title="Login" @onclick="@(() => NavigateAndClose("login"))">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </button>
+        }
+    </nav>
 }
 
 @code {
-    private bool IsOpen { get; set; }
+    private string ActiveTab = "browse";
 
     protected override void OnInitialized()
     {
         AppShell.OnChange += StateHasChanged;
+        Nav.LocationChanged += OnLocationChanged;
+        SetActiveTab();
+    }
+
+    private void OnLocationChanged(object sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        SetActiveTab();
+        InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
     {
         AppShell.OnChange -= StateHasChanged;
+        Nav.LocationChanged -= OnLocationChanged;
     }
 
     public async Task Logout()
@@ -100,23 +66,10 @@
         AppShell.IsUserLoggedIn = false;
         await InvokeAsync(StateHasChanged);
         Nav.NavigateTo($"/login");
-        IsOpen = false;
-    }
-
-    private void HandleOverlayClick()
-    {
-        IsOpen = false;
-    }
-
-    private string IsActive(string path)
-    {
-        var uri = Nav.ToBaseRelativePath(Nav.Uri).TrimEnd('/');
-        return uri == path ? "active" : "";
     }
 
     private void NavigateAndClose(string path)
     {
-        IsOpen = false;
         if (string.IsNullOrEmpty(path))
             Nav.NavigateTo("/");
         else
@@ -126,4 +79,18 @@
     private bool HideNavMenu =>
         Nav.ToBaseRelativePath(Nav.Uri).Trim('/').Equals("login", StringComparison.OrdinalIgnoreCase) ||
         Nav.ToBaseRelativePath(Nav.Uri).Trim('/').Equals("register", StringComparison.OrdinalIgnoreCase);
+
+    private void SetActiveTab()
+    {
+        var uri = Nav.ToBaseRelativePath(Nav.Uri).Trim('/').ToLowerInvariant();
+        ActiveTab = uri switch
+        {
+            "" => "browse",
+            "books" => "books",
+            "favourites" => "favourites",
+            "register" => "register",
+            "login" => "login",
+            _ => ""
+        };
+    }
 }

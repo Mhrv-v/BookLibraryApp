@@ -1,53 +1,274 @@
 ﻿@page "/"
 
+<style>
+    .tachiyomi-header {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: #303030;
+    }
+
+    .tachiyomi-library-bg {
+        padding-bottom: 16px;
+    }
+
+    .tachiyomi-book-col {
+        min-width: 0;
+    }
+
+    .tachiyomi-book-card {
+        border: none;
+        border-radius: 12px;
+        background: #fff;
+        transition: box-shadow .15s;
+        cursor: pointer;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .tachiyomi-book-card:hover, .tachiyomi-book-card:focus {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+            z-index: 2;
+        }
+
+    .tachiyomi-book-cover-wrap {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 3/4;
+        background: #eee;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .tachiyomi-book-cover {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        display: block;
+        border-radius: 0;
+        background: #fafafa;
+    }
+
+    .tachiyomi-fav-badge {
+        position: absolute;
+        top: 8px;
+        right: 12px;
+        color: #ff4d4f;
+        background: #fff;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 1.15rem;
+        z-index: 2;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.09);
+    }
+
+    .tachiyomi-book-title-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: linear-gradient(to top,rgba(20,20,20,0.87) 85%,rgba(20,20,20,0.01) 100%);
+        color: #fff;
+        padding: 16px 12px 10px 12px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        border-bottom-left-radius: 12px;
+        border-bottom-right-radius: 12px;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .tachiyomi-book-title {
+        font-size: 1.08rem;
+        font-weight: 600;
+        width: 100%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .tachiyomi-book-author {
+        font-size: .97rem;
+        color: #f8e9a1;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    /* --- New List View Styles --- */
+    .tachiyomi-list-view {
+        background: #f7f8fa;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+    }
+
+    .tachiyomi-list-item {
+        background: #fff;
+        border: none;
+        border-bottom: 1px solid #e5e7ea;
+        transition: background 0.12s;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        padding: 14px 20px;
+        gap: 18px;
+        min-height: 96px;
+        position: relative;
+    }
+
+        .tachiyomi-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .tachiyomi-list-item:hover {
+            background: #f0f1f6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            z-index: 1;
+        }
+
+    .tachiyomi-list-cover {
+        width: 64px;
+        height: 88px;
+        object-fit: cover;
+        border-radius: 8px;
+        background: #fafafa;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+        flex-shrink: 0;
+    }
+
+    .tachiyomi-list-details {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .tachiyomi-list-title {
+        font-size: 1.13rem;
+        font-weight: 600;
+        color: #222;
+        margin-bottom: 2px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .tachiyomi-list-author {
+        font-size: 1.01rem;
+        color: #757575;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .tachiyomi-fav-list {
+        margin-left: 14px;
+        font-size: 1.35rem;
+        color: #ff4d4f;
+        position: absolute;
+        right: 26px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #fff;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+    }
+
+    .tachiyomi-modal-content {
+        border-radius: 16px;
+    }
+
+    .tachiyomi-modal-cover {
+        width: 120px;
+        height: 160px;
+        object-fit: contain;
+        border-radius: 8px;
+        background: #fafafa;
+        box-shadow: 0 1px 5px rgba(0,0,0,0.10);
+    }
+
+    .tachiyomi-loading {
+        min-height: 250px;
+    }
+</style>
+
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>My Books</h2>
+    <h2 class="tachiyomi-header">My Library</h2>
     <div>
-        <button class="btn btn-outline-secondary me-1" disabled="@IsGridView" @onclick="()=>SetGrid(true)">
-            <i class="fa fa-th"></i> Grid
+        <button class="btn btn-outline-secondary me-1" disabled="@IsGridView" @onclick="() => SetGrid(true)">
+            <i class="fa fa-th"></i>
         </button>
-        <button class="btn btn-outline-secondary" disabled="@(IsGridView == false)" @onclick="()=>SetGrid(false)">
-            <i class="fa fa-list"></i> List
+        <button class="btn btn-outline-secondary" disabled="@(IsGridView == false)" @onclick="() => SetGrid(false)">
+            <i class="fa fa-list"></i>
         </button>
     </div>
 </div>
 
 @if (IsLoading)
 {
-    <p>Loading books...</p>
+    <div class="tachiyomi-loading d-flex justify-content-center align-items-center">
+        <div class="spinner-border text-warning" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
 }
 else if (BooksForPage is null || BooksForPage.Count == 0)
 {
-    <p class="text-muted">No books found in database.</p>
+    <p class="text-muted text-center mt-5">No books found in your library.</p>
 }
 else
 {
     @if (IsGridView)
     {
-        <div class="book-grid">
-            @foreach (var book in BooksForPage)
-            {
-                <div class="col">
-                    <div class="book-card clickable" @onclick="() => ShowDetails(book)">
-                            <img src="@book.CoverImagePath" alt="@book.Title" />
-                            <div class="title">@book.Title</div>
-                            <div class="author">@book.Author</div>
+        <div class="container-fluid px-0 tachiyomi-library-bg">
+            <div class="row row-cols-2 g-3">
+                @foreach (var book in BooksForPage)
+                {
+                    <div class="col tachiyomi-book-col">
+                        <div class="tachiyomi-book-card card h-100 shadow-sm clickable" @onclick="() => ShowDetails(book)">
+                            <div class="tachiyomi-book-cover-wrap">
+                                <img src="@book.CoverImagePath" class="tachiyomi-book-cover card-img-top" alt="@book.Title" />
+                                @if (SelectedBook != null && SelectedBook.ID == book.ID && IsBookFavourited)
+                                {
+                                    <span class="tachiyomi-fav-badge"><i class="fa fa-heart"></i></span>
+                                }
+                                <div class="tachiyomi-book-title-overlay">
+                                    <div class="tachiyomi-book-title" title="@book.Title">@book.Title</div>
+                                    <div class="tachiyomi-book-author text-truncate">@book.Author</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-            }
+                }
+            </div>
         </div>
     }
     else
     {
-        <div class="book-list">
+        <div class="list-group tachiyomi-list-view">
             @foreach (var book in BooksForPage)
             {
-                <div class="book-list-row clickable" @onclick="() => ShowDetails(book)">
-                    <img src="@book.CoverImagePath" alt="@book.Title" style="width: 10%; height: auto; object-fit: contain;" />
-                    <span class="title">@book.Title</span>
-                    <span class="author ms-2">@book.Author</span>
+                <div class="tachiyomi-list-item clickable" @onclick="() => ShowDetails(book)">
+                    <img src="@book.CoverImagePath" alt="@book.Title" class="tachiyomi-list-cover" />
+                    <div class="tachiyomi-list-details">
+                        <div class="tachiyomi-list-title" title="@book.Title">@book.Title</div>
+                        <div class="tachiyomi-list-author" title="@book.Author">@book.Author</div>
+                    </div>
+                    @if (SelectedBook != null && SelectedBook.ID == book.ID && IsBookFavourited)
+                    {
+                        <span class="tachiyomi-fav-list"><i class="fa fa-heart"></i></span>
+                    }
                 </div>
-
             }
         </div>
     }
@@ -56,15 +277,15 @@ else
 @if (SelectedBook != null)
 {
     <div class="modal show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5);">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content tachiyomi-modal-content">
+                <div class="modal-header border-0">
                     <h5 class="modal-title">@SelectedBook.Title</h5>
                     <button type="button" class="btn-close" @onclick="CloseDetails"></button>
                 </div>
-                <div class="modal-body">
-                    <img src="@SelectedBook.CoverImagePath" alt="@SelectedBook.Title" style="max-width:100px;float:left;margin-right:10px;" />
-                    <dl>
+                <div class="modal-body d-flex">
+                    <img src="@SelectedBook.CoverImagePath" alt="@SelectedBook.Title" class="tachiyomi-modal-cover me-3" />
+                    <dl class="mb-0 flex-grow-1">
                         <dt>Author</dt>
                         <dd>@SelectedBook.Author</dd>
                         <dt>Genre</dt>
@@ -78,7 +299,7 @@ else
                         }
                     </dl>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer border-0">
                     <button class="btn btn-warning" @onclick="OpenAmazon">
                         <i class="fa fa-amazon"></i> Buy on Amazon
                     </button>
@@ -99,4 +320,3 @@ else
         </div>
     </div>
 }
-
