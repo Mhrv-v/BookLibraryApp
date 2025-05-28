@@ -38,7 +38,13 @@
                     <li>
                         <a class="navmenu-link @(IsActive(""))" href="" @onclick='() => NavigateAndClose("")'>
                             <span class="navmenu-icon"><i class="fa fa-home"></i></span>
-                            Home
+                            Browse
+                        </a>
+                    </li>
+                    <li>
+                        <a class="navmenu-link @(IsActive("books"))" href="" @onclick='() => NavigateAndClose("books")'>
+                            <span class="navmenu-icon"><i class="fa fa-home"></i></span>
+                            Books
                         </a>
                     </li>
                     <li>
@@ -116,4 +122,8 @@
         else
             Nav.NavigateTo(path);
     }
+
+    private bool HideNavMenu =>
+        Nav.ToBaseRelativePath(Nav.Uri).Trim('/').Equals("login", StringComparison.OrdinalIgnoreCase) ||
+        Nav.ToBaseRelativePath(Nav.Uri).Trim('/').Equals("register", StringComparison.OrdinalIgnoreCase);
 }

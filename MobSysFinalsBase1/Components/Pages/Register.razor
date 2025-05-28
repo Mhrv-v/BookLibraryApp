@@ -1,55 +1,49 @@
 ﻿@page "/register"
 
-<div class="register-bg">
-    <div class="card register-card p-4" style="max-width: 430px; width: 100%;">
-        <div class="text-center mb-4">
-            <i class="fas fa-user-plus fa-3x text-warning mb-2"></i>
-            <h3 class="mb-0">Register</h3>
-            <p class="text-muted small">Create your account to get started.</p>
+<div class="container d-flex align-items-center justify-content-center min-vh-100 bg-light">
+    <div class="col-12 col-sm-8 col-md-6 col-lg-5">
+        <div class="card shadow border-0 p-4" style="border-radius: 8px;">
+            <div class="text-center mb-4">
+                <img src="imgs/logo.png" alt="Logo" width="48" class="mb-2" />
+                <h3 class="mb-0 fw-semibold">Sign up for Tachiyosi</h3>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(StatusMessage))
+            {
+                <div class="alert alert-@Status d-flex align-items-center" role="alert">
+                    <i class="fa fa-info-circle me-2"></i>
+                    <span>@StatusMessage</span>
+                </div>
+            }
+            <EditForm Model="@Model" OnValidSubmit="RegisterUser" autocomplete="off">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="mb-3">
+                    <label for="username" class="form-label fw-semibold">Username</label>
+                    <InputText id="username" class="form-control border-secondary-subtle" @bind-Value="Model.Username" placeholder="Choose a username" required />
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label fw-semibold">Password</label>
+                    <InputText id="password" class="form-control border-secondary-subtle" @bind-Value="Model.Password" type="password" placeholder="Create a password" required />
+                </div>
+                <div class="mb-3">
+                    <label for="firstname" class="form-label fw-semibold">First Name</label>
+                    <InputText id="firstname" class="form-control border-secondary-subtle" @bind-Value="Model.FirstName" placeholder="Enter your first name" required />
+                </div>
+                <div class="mb-3">
+                    <label for="lastname" class="form-label fw-semibold">Last Name</label>
+                    <InputText id="lastname" class="form-control border-secondary-subtle" @bind-Value="Model.LastName" placeholder="Enter your last name" required />
+                </div>
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-success fw-semibold">Sign up</button>
+                </div>
+            </EditForm>
+            <div class="text-center mt-3">
+                <span class="text-muted small">Already have an account? <a href="/login" class="link-primary">Sign in</a></span>
+            </div>
         </div>
-        @if (!string.IsNullOrWhiteSpace(StatusMessage))
-        {
-            <div class="alert alert-@Status d-flex align-items-center" role="alert">
-                <i class="fa fa-info-circle me-2"></i>
-                <span>@StatusMessage</span>
-            </div>
-        }
-        <EditForm Model="@Model" OnValidSubmit="RegisterUser" autocomplete="off">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                    <InputText id="username" class="form-control" @bind-Value="Model.Username" placeholder="Enter username" required />
-                </div>
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                    <InputText id="password" class="form-control" @bind-Value="Model.Password" type="password" placeholder="Enter password" required />
-                </div>
-            </div>
-            <div class="mb-3">
-                <label for="firstname" class="form-label">First Name</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                    <InputText id="firstname" class="form-control" @bind-Value="Model.FirstName" placeholder="Enter first name" required />
-                </div>
-            </div>
-            <div class="mb-3">
-                <label for="lastname" class="form-label">Last Name</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                    <InputText id="lastname" class="form-control" @bind-Value="Model.LastName" placeholder="Enter last name" required />
-                </div>
-            </div>
-            <div class="d-grid mb-2">
-                <button type="submit" class="btn btn-warning btn-lg">
-                    <i class="fas fa-user-plus"></i> Register
-                </button>
-            </div>
-        </EditForm>
+        <div class="text-center mt-4">
+            <span class="text-secondary-50 small">© @DateTime.UtcNow.Year Tachiyosi, Inc.</span>
+        </div>
     </div>
 </div>
