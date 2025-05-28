@@ -18,14 +18,13 @@ namespace MobSysFinalsBase1
 
             builder.Services.AddMauiBlazorWebView();
 
-            builder.Services.AddSingleton<BookService>();
-
 #if DEBUG
-            builder.Services.AddBlazorWebViewDeveloperTools();
+    		builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
             builder.Services.AddSingleton<AppShellContext>();
             builder.Services.AddSingleton<DatabaseContext>();
+            builder.Services.AddSingleton<BookService>();
             return builder.Build();
         }
     }
